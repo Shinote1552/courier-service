@@ -145,7 +145,7 @@ test-cover: mock-gen
 	@go test -coverpkg=$(COVERAGE_PKGS) -coverprofile=$(COVERAGE_UNIT_DIR)/coverage.out -covermode=atomic $(TESTS_DIR)
 	@echo ""
 
-test-cover-html: test-cover
+test-cover-html: test-coverQ
 	@echo "Generating HTML coverage report..."`
 	@go tool cover -html=$(COVERAGE_UNIT_DIR)/coverage.out -o $(COVERAGE_UNIT_DIR)/coverage.html
 	@echo "HTML coverage report generated: $(COVERAGE_UNIT_DIR)/coverage.html"

@@ -6,8 +6,9 @@ import (
 	"runtime/debug"
 	"time"
 
-	"golang.org/x/sync/errgroup"
 	"service/pkg/logger"
+
+	"golang.org/x/sync/errgroup"
 )
 
 // Task определяет интерфейс для фоновых задач, которые могут выполняться периодически.
@@ -22,9 +23,16 @@ type Task interface {
 	Info() string
 }
 
+type handlerLogger interface {
+	Info(msg string, fields ...logger.Field)
+	Warn(msg string, fields ...logger.Field)
+	Error(msg string, fields ...logger.Field)
+	With(fields ...logger.Field) logger.Logger
+}
+
 // Worker управляет выполнением набора фоновых задач.
 type Worker struct {
-	log   logger.Logger
+	log   handlerLogger
 	tasks []Task
 }
 
@@ -37,7 +45,7 @@ type Worker struct {
 //  2. Если любая задача завершается с ошибкой или паникой на этапе инициализации,
 //     New возвращает ошибку и Worker не создается.
 //  3. Задачи выполняются в фоне до тех пор, пока не будет отменен переданный контекст.
-func New(ctx context.Context, log logger.Logger, tasks []Task) (*Worker, error) {
+func New(ctx context.Context, log handlerLogger, tasks []Task) (*Worker, error) {
 	if len(tasks) == 0 {
 		return &Worker{
 			log:   log,
