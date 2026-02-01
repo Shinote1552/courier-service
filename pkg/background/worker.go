@@ -6,9 +6,8 @@ import (
 	"runtime/debug"
 	"time"
 
-	"service/pkg/logger"
-
 	"golang.org/x/sync/errgroup"
+	"service/pkg/logger"
 )
 
 // Task определяет интерфейс для фоновых задач, которые могут выполняться периодически.
