@@ -1,0 +1,43 @@
+@startuml
+' API Endpoints diagram for service-order
+' Render with PlantUML
+
+skinparam monochrome true
+skinparam componentStyle rectangle
+skinparam shadowing false
+skinparam ArrowColor Black
+
+title service-order HTTP API (public/api/v1)
+
+actor Client
+node "service-order" as Service {
+  component "HTTP API\n(base: /public/api/v1)" as API {
+    rectangle "POST /order\n- Create order" as ep_create
+    rectangle "GET /order/{id}\n- Get order by ID" as ep_get
+    rectangle "GET /order/{id}/status\n- Get order status" as ep_status
+    rectangle "GET /orders?from=RFC3339\n- List orders since time" as ep_list
+    rectangle "PUT /order/{id}\n- Update order" as ep_update
+    rectangle "DELETE /order/{id}\n- Delete order" as ep_delete
+    rectangle "POST /debug/seed\n- Create demo orders (N=10)" as ep_seed
+  }
+}
+
+Client --> ep_create : JSON body
+Client --> ep_get
+Client --> ep_status
+Client --> ep_list : query from
+Client --> ep_update : JSON body
+Client --> ep_delete
+Client --> ep_seed
+
+note right of API
+Auth headers (training mode):
+- X-User-ID: optional for GETs
+- X-Bypass-Auth: true (simulated user)
+Rules:
+- GETs (get by id, status, list) don't require X-User-ID
+- Mutations (POST/PUT/DELETE) use provided user and check ownership
+- POST /debug/seed requires auth header and creates 10 demo orders for current user
+end note
+
+@enduml

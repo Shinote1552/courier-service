@@ -1,0 +1,78 @@
+{
+  "info": {
+    "name": "Service Order API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "d5f3a3f1-0000-4000-8000-000000000001"
+  },
+  "item": [
+    {
+      "name": "Create Order",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"},
+          {"key": "X-Bypass-Auth", "value": "true"}
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/public/api/v1/order",
+          "host": ["{{baseUrl}}"],
+          "path": ["public", "api", "v1", "order"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"order_number\": \"A-100\",\n  \"fio\": \"Ivan Ivanov\",\n  \"restaurant_id\": \"rest-1\",\n  \"items\": [{\n    \"food_id\": \"pizza-1\",\n    \"name\": \"Pepperoni\",\n    \"quantity\": 1,\n    \"price\": 500\n  }],\n  \"total_price\": 500,\n  \"address\": {\n    \"street\": \"Lenina\",\n    \"house\": \"10\"\n  }\n}"
+        }
+      }
+    },
+    {
+      "name": "Get Order",
+      "request": {
+        "method": "GET",
+        "header": [
+          {"key": "X-Bypass-Auth", "value": "true"}
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/public/api/v1/order/{{orderId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["public", "api", "v1", "order", "{{orderId}}"]
+        }
+      }
+    },
+    {
+      "name": "Get Status",
+      "request": {
+        "method": "GET",
+        "header": [
+          {"key": "X-Bypass-Auth", "value": "true"}
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/public/api/v1/order/{{orderId}}/status",
+          "host": ["{{baseUrl}}"],
+          "path": ["public", "api", "v1", "order", "{{orderId}}", "status"]
+        }
+      }
+    },
+    {
+      "name": "List Orders From Date",
+      "request": {
+        "method": "GET",
+        "header": [
+          {"key": "X-Bypass-Auth", "value": "true"}
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/public/api/v1/orders?from={{from}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["public", "api", "v1", "orders"],
+          "query": [
+            {"key": "from", "value": "{{from}}"}
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {"key": "baseUrl", "value": "http://localhost:8080"},
+    {"key": "orderId", "value": ""},
+    {"key": "from", "value": "1970-01-01T00:00:00Z"}
+  ]
+}

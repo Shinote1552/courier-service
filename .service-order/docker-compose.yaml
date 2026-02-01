@@ -1,0 +1,17 @@
+version: '3.9'
+services:
+  service-order:
+    build: .
+    ports:
+      - "${ORDER_PORT}:${LOCALHOST}"
+      - "${GRPC_ORDER_PORT}:${GRPC_ORDER_PORT}"
+    environment:
+      - PORT=${LOCALHOST}
+      - KAFKA_BROKERS=kafka:${KAFKA_CLIENT_PORT}
+      - KAFKA_ORDER_TOPIC=${TOPIC_NAME}
+    networks:
+      - infrastructure_default
+
+networks:
+  infrastructure_default:
+    external: true

@@ -1,0 +1,376 @@
+openapi: 3.0.3
+info:
+  title: Service Order API
+  version: 1.0.0
+servers:
+  - url: /public/api/v1
+paths:
+  /order:
+    post:
+      summary: Create order
+      operationId: createOrder
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /order/{id}:
+    get:
+      summary: Get order by id
+      operationId: getOrder
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Update order
+      operationId: updateOrder
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrderRequest'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Delete order
+      operationId: deleteOrder
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteOrderResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /order/{id}/status:
+    get:
+      summary: Get order status by id
+      operationId: getOrderStatus
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  order_id:
+                    type: string
+                  status:
+                    $ref: '#/components/schemas/OrderStatus'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /orders:
+    get:
+      summary: List orders from date
+      operationId: listOrders
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: from
+          required: false
+          description: RFC3339 date-time; returns orders with created_at >= from. If omitted, returns all.
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /debug/seed:
+    post:
+      summary: Seed debug orders
+      description: Creates 10 demo orders with meaningful fields and varied statuses using current time. Uses X-Bypass-Auth=true to seed for default-user if no auth.
+      operationId: seedDebugOrders
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    OrderStatus:
+      type: string
+      enum: [pending, confirmed, cooking, delivering, delivered, canceled, deleted, updated, created, completed]
+    Item:
+      type: object
+      required: [food_id, name, quantity, price]
+      properties:
+        food_id:
+          type: string
+        name:
+          type: string
+          maxLength: 200
+        quantity:
+          type: integer
+          minimum: 1
+        price:
+          type: integer
+          minimum: 0
+    DeliveryAddress:
+      type: object
+      properties:
+        street:
+          type: string
+        house:
+          type: string
+        apartment:
+          type: string
+        floor:
+          type: string
+        comment:
+          type: string
+    CreateOrderRequest:
+      type: object
+      required: [restaurant_id, items, total_price, address]
+      properties:
+        order_number:
+          type: string
+        fio:
+          type: string
+        restaurant_id:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Item'
+          minItems: 1
+        total_price:
+          type: integer
+          minimum: 0
+        address:
+          $ref: '#/components/schemas/DeliveryAddress'
+    UpdateOrderRequest:
+      type: object
+      properties:
+        order_number:
+          type: string
+        fio:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Item'
+        total_price:
+          type: integer
+          minimum: 0
+        address:
+          $ref: '#/components/schemas/DeliveryAddress'
+    OrderResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        user_id:
+          type: string
+        order_number:
+          type: string
+        fio:
+          type: string
+        restaurant_id:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Item'
+        total_price:
+          type: integer
+        address:
+          $ref: '#/components/schemas/DeliveryAddress'
+        status:
+          $ref: '#/components/schemas/OrderStatus'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        estimated_delivery:
+          type: string
+          format: date-time
+    DeleteOrderResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          $ref: '#/components/schemas/OrderStatus'
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+        message:
+          type: string
