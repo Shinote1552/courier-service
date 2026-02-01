@@ -1,0 +1,129 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15
+    container_name: ${COMPOSE_PROJECT_NAME}-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - infrastructure_default
+
+
+  # HTTP Service (REST API + background tasks)
+  service-courier:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: service-courier
+    command: ["/service-courier"]
+    ports:
+      - "8082:8080"
+      # - "16060:6060"  # ← DEBUG PPROF, ТОЛЬКО ДЛЯ ТЕСТА PPROF!
+    environment:
+      # Server
+      - PORT=${PORT}
+      - MIDDLEWARE_REQUEST_TIMEOUT=${MIDDLEWARE_REQUEST_TIMEOUT}
+      - MIDDLEWARE_RATE_LIMIT_QPS=${MIDDLEWARE_RATE_LIMIT_QPS}
+      - MIDDLEWARE_RATE_LIMIT_BURST=${MIDDLEWARE_RATE_LIMIT_BURST}
+      # Pprof server
+      - PPROF_ENABLED=${PPROF_ENABLED}      
+      - PPROF_PORT=${PPROF_PORT}            
+      # Database
+      - POSTGRES_HOST=postgres
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_PORT=5432
+      - POSTGRES_SSLMODE=${POSTGRES_SSLMODE}
+      # Background tasks
+      - BACKGROUND_COURIERS_STATUS_UPDATE_INTERVAL=${BACKGROUND_COURIERS_STATUS_UPDATE_INTERVAL}
+      - BACKGROUND_ORDERS_ASSIGN_PROCESS_INTERVAL=${BACKGROUND_ORDERS_ASSIGN_PROCESS_INTERVAL}
+      # gRPC
+      - ORDER_SERVICE_GRPC_HOST=service-order:50051
+      # Kafka
+      - KAFKA_BROKERS=${KAFKA_BROKERS}
+      - KAFKA_TOPIC=${KAFKA_TOPIC}
+      - KAFKA_CONSUMER_GROUP=${KAFKA_CONSUMER_GROUP}
+      - KAFKA_HTTP_HEALTHCHECK_PORT=${KAFKA_HTTP_HEALTHCHECK_PORT}
+      - KAFKA_SARAMA_VERSION=${KAFKA_SARAMA_VERSION}
+      - KAFKA_SARAMA_OFFSETS_AUTOCOMMIT=${KAFKA_SARAMA_OFFSETS_AUTOCOMMIT}
+      - KAFKA_HANDLER_ORDER_STATUS_CHANGED_PROCESS_TIMEOUT=${KAFKA_HANDLER_ORDER_STATUS_CHANGED_PROCESS_TIMEOUT}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - infrastructure_default
+
+
+  # Kafka Worker (order status changed consumer)
+  worker-kafka-consumer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: worker-kafka-consumer
+    command: ["/worker-kafka"]
+    ports:
+      - "8084:8081"
+    environment:
+      # Server
+      - PORT=${PORT}
+      - MIDDLEWARE_REQUEST_TIMEOUT=${MIDDLEWARE_REQUEST_TIMEOUT}
+      - MIDDLEWARE_RATE_LIMIT_QPS=${MIDDLEWARE_RATE_LIMIT_QPS}
+      - MIDDLEWARE_RATE_LIMIT_BURST=${MIDDLEWARE_RATE_LIMIT_BURST}
+      # Pprof server
+      - PPROF_ENABLED=false
+      # Database
+      - POSTGRES_HOST=postgres
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_PORT=5432
+      - POSTGRES_SSLMODE=${POSTGRES_SSLMODE}
+      # Background tasks
+      - BACKGROUND_COURIERS_STATUS_UPDATE_INTERVAL=${BACKGROUND_COURIERS_STATUS_UPDATE_INTERVAL}
+      - BACKGROUND_ORDERS_ASSIGN_PROCESS_INTERVAL=${BACKGROUND_ORDERS_ASSIGN_PROCESS_INTERVAL}
+      # gRPC
+      - ORDER_SERVICE_GRPC_HOST=service-order:50051
+      # Kafka
+      - KAFKA_BROKERS=${KAFKA_BROKERS}
+      - KAFKA_TOPIC=${KAFKA_TOPIC}
+      - KAFKA_CONSUMER_GROUP=${KAFKA_CONSUMER_GROUP}
+      - KAFKA_HTTP_HEALTHCHECK_PORT=${KAFKA_HTTP_HEALTHCHECK_PORT}
+      - KAFKA_SARAMA_VERSION=${KAFKA_SARAMA_VERSION}
+      - KAFKA_SARAMA_OFFSETS_AUTOCOMMIT=${KAFKA_SARAMA_OFFSETS_AUTOCOMMIT}
+      - KAFKA_HANDLER_ORDER_STATUS_CHANGED_PROCESS_TIMEOUT=${KAFKA_HANDLER_ORDER_STATUS_CHANGED_PROCESS_TIMEOUT}
+
+
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - infrastructure_default
+
+
+# Для изоляции Docker ресурсов. Это гарантирует, что при очистке удаляются
+# ТОЛЬКО именованные тома и контейнеры, не затрагивая другие проекты в системе.
+volumes:
+  pgdata:
+    name: "${COMPOSE_PROJECT_NAME}_pgdata"
+
+
+networks:
+  infrastructure_default:
+    external: true

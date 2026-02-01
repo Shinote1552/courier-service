@@ -1,0 +1,108 @@
+goroutine profile: total 18
+3 @ 0x4796ee 0x456e97 0x95e78c 0x481321
+#	0x95e78b	google.golang.org/grpc/internal/grpcsync.(*CallbackSerializer).run+0x10b	/go/pkg/mod/google.golang.org/grpc@v1.75.0/internal/grpcsync/callback_serializer.go:88
+
+1 @ 0x4171a9 0x47b6e9 0x738a53 0x481321
+#	0x47b6e8	os/signal.signal_recv+0x28	/usr/local/go/src/runtime/sigqueue.go:152
+#	0x738a52	os/signal.loop+0x12		/usr/local/go/src/os/signal/signal_unix.go:23
+
+1 @ 0x439811 0x4784fd 0x71bb51 0x71b985 0x7187ab 0x731fef 0x732a9e 0x6cba09 0x6cd904 0xb053c2 0x6da2ee 0x6c9f05 0x481321
+#	0x71bb50	runtime/pprof.writeRuntimeProfile+0xb0			/usr/local/go/src/runtime/pprof/pprof.go:796
+#	0x71b984	runtime/pprof.writeGoroutine+0x44			/usr/local/go/src/runtime/pprof/pprof.go:755
+#	0x7187aa	runtime/pprof.(*Profile).WriteTo+0x14a			/usr/local/go/src/runtime/pprof/pprof.go:377
+#	0x731fee	net/http/pprof.handler.ServeHTTP+0x52e			/usr/local/go/src/net/http/pprof/pprof.go:272
+#	0x732a9d	net/http/pprof.Index+0xdd				/usr/local/go/src/net/http/pprof/pprof.go:389
+#	0x6cba08	net/http.HandlerFunc.ServeHTTP+0x28			/usr/local/go/src/net/http/server.go:2294
+#	0x6cd903	net/http.(*ServeMux).ServeHTTP+0x1c3			/usr/local/go/src/net/http/server.go:2822
+#	0xb053c1	github.com/gorilla/mux.(*Router).ServeHTTP+0x1e1	/go/pkg/mod/github.com/gorilla/mux@v1.8.1/mux.go:212
+#	0x6da2ed	net/http.serverHandler.ServeHTTP+0x8d			/usr/local/go/src/net/http/server.go:3301
+#	0x6c9f04	net/http.(*conn).serve+0x624				/usr/local/go/src/net/http/server.go:2102
+
+1 @ 0x4796ee 0x43d0f7 0x478905 0x4f6387 0x4f767a 0x4f7668 0x544ee5 0x554de5 0x661cb7 0x4ec0f1 0xa0f2c5 0xa0f293 0xa0f9eb 0xa10138 0xa34272 0x481321
+#	0x478904	internal/poll.runtime_pollWait+0x84					/usr/local/go/src/runtime/netpoll.go:351
+#	0x4f6386	internal/poll.(*pollDesc).wait+0x26					/usr/local/go/src/internal/poll/fd_poll_runtime.go:84
+#	0x4f7679	internal/poll.(*pollDesc).waitRead+0x279				/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+#	0x4f7667	internal/poll.(*FD).Read+0x267						/usr/local/go/src/internal/poll/fd_unix.go:165
+#	0x544ee4	net.(*netFD).Read+0x24							/usr/local/go/src/net/fd_posix.go:55
+#	0x554de4	net.(*conn).Read+0x44							/usr/local/go/src/net/net.go:194
+#	0x661cb6	bufio.(*Reader).Read+0x196						/usr/local/go/src/bufio/bufio.go:245
+#	0x4ec0f0	io.ReadAtLeast+0x90							/usr/local/go/src/io/io.go:335
+#	0xa0f2c4	io.ReadFull+0x64							/usr/local/go/src/io/io.go:354
+#	0xa0f292	golang.org/x/net/http2.readFrameHeader+0x32				/go/pkg/mod/golang.org/x/net@v0.48.0/http2/frame.go:242
+#	0xa0f9ea	golang.org/x/net/http2.(*Framer).ReadFrameHeader+0x6a			/go/pkg/mod/golang.org/x/net@v0.48.0/http2/frame.go:505
+#	0xa10137	golang.org/x/net/http2.(*Framer).ReadFrame+0x17				/go/pkg/mod/golang.org/x/net@v0.48.0/http2/frame.go:564
+#	0xa34271	google.golang.org/grpc/internal/transport.(*http2Client).reader+0x1d1	/go/pkg/mod/google.golang.org/grpc@v1.75.0/internal/transport/http2_client.go:1656
+
+1 @ 0x4796ee 0x43d0f7 0x478905 0x4f6387 0x4f767a 0x4f7668 0x544ee5 0x554de5 0x6c4279 0x661783 0x6618b3 0x6ca065 0x481321
+#	0x478904	internal/poll.runtime_pollWait+0x84		/usr/local/go/src/runtime/netpoll.go:351
+#	0x4f6386	internal/poll.(*pollDesc).wait+0x26		/usr/local/go/src/internal/poll/fd_poll_runtime.go:84
+#	0x4f7679	internal/poll.(*pollDesc).waitRead+0x279	/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+#	0x4f7667	internal/poll.(*FD).Read+0x267			/usr/local/go/src/internal/poll/fd_unix.go:165
+#	0x544ee4	net.(*netFD).Read+0x24				/usr/local/go/src/net/fd_posix.go:55
+#	0x554de4	net.(*conn).Read+0x44				/usr/local/go/src/net/net.go:194
+#	0x6c4278	net/http.(*connReader).Read+0x158		/usr/local/go/src/net/http/server.go:798
+#	0x661782	bufio.(*Reader).fill+0x102			/usr/local/go/src/bufio/bufio.go:113
+#	0x6618b2	bufio.(*Reader).Peek+0x52			/usr/local/go/src/bufio/bufio.go:152
+#	0x6ca064	net/http.(*conn).serve+0x784			/usr/local/go/src/net/http/server.go:2137
+
+1 @ 0x4796ee 0x43d0f7 0x478905 0x4f6387 0x4fb755 0x4fb743 0x546e89 0x55dcfb 0x55cef0 0x6cf3ec 0x6ceff1 0xb8d18e 0x481321
+#	0x478904	internal/poll.runtime_pollWait+0x84		/usr/local/go/src/runtime/netpoll.go:351
+#	0x4f6386	internal/poll.(*pollDesc).wait+0x26		/usr/local/go/src/internal/poll/fd_poll_runtime.go:84
+#	0x4fb754	internal/poll.(*pollDesc).waitRead+0x294	/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+#	0x4fb742	internal/poll.(*FD).Accept+0x282		/usr/local/go/src/internal/poll/fd_unix.go:620
+#	0x546e88	net.(*netFD).accept+0x28			/usr/local/go/src/net/fd_unix.go:172
+#	0x55dcfa	net.(*TCPListener).accept+0x1a			/usr/local/go/src/net/tcpsock_posix.go:159
+#	0x55ceef	net.(*TCPListener).Accept+0x2f			/usr/local/go/src/net/tcpsock.go:380
+#	0x6cf3eb	net/http.(*Server).Serve+0x30b			/usr/local/go/src/net/http/server.go:3424
+#	0x6ceff0	net/http.(*Server).ListenAndServe+0x70		/usr/local/go/src/net/http/server.go:3350
+#	0xb8d18d	main.run.func5+0x10d				/app/cmd/service/main.go:181
+
+1 @ 0x4796ee 0x43d0f7 0x478905 0x4f6387 0x4fb755 0x4fb743 0x546e89 0x55dcfb 0x55cef0 0x6cf3ec 0x6ceff1 0xb8d3ae 0x481321
+#	0x478904	internal/poll.runtime_pollWait+0x84		/usr/local/go/src/runtime/netpoll.go:351
+#	0x4f6386	internal/poll.(*pollDesc).wait+0x26		/usr/local/go/src/internal/poll/fd_poll_runtime.go:84
+#	0x4fb754	internal/poll.(*pollDesc).waitRead+0x294	/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+#	0x4fb742	internal/poll.(*FD).Accept+0x282		/usr/local/go/src/internal/poll/fd_unix.go:620
+#	0x546e88	net.(*netFD).accept+0x28			/usr/local/go/src/net/fd_unix.go:172
+#	0x55dcfa	net.(*TCPListener).accept+0x1a			/usr/local/go/src/net/tcpsock_posix.go:159
+#	0x55ceef	net.(*TCPListener).Accept+0x2f			/usr/local/go/src/net/tcpsock.go:380
+#	0x6cf3eb	net/http.(*Server).Serve+0x30b			/usr/local/go/src/net/http/server.go:3424
+#	0x6ceff0	net/http.(*Server).ListenAndServe+0x70		/usr/local/go/src/net/http/server.go:3350
+#	0xb8d3ad	main.run.func3+0x10d				/app/cmd/service/main.go:149
+
+1 @ 0x4796ee 0x456e97 0x7385e6 0x481321
+#	0x7385e5	os/signal.NotifyContext.func1+0x65	/usr/local/go/src/os/signal/signal.go:289
+
+1 @ 0x4796ee 0x456e97 0x91e987 0x91d69d 0x481321
+#	0x91e986	github.com/jackc/pgx/v5/pgxpool.(*Pool).backgroundHealthCheck+0xc6	/go/pkg/mod/github.com/jackc/pgx/v5@v5.7.6/pgxpool/pool.go:476
+#	0x91d69c	github.com/jackc/pgx/v5/pgxpool.NewWithConfig.func5+0x3c		/go/pkg/mod/github.com/jackc/pgx/v5@v5.7.6/pgxpool/pool.go:329
+
+1 @ 0x4796ee 0x456e97 0xa1f988 0xa20158 0xa2a012 0x481321
+#	0xa1f987	google.golang.org/grpc/internal/transport.(*controlBuffer).get+0x107	/go/pkg/mod/google.golang.org/grpc@v1.75.0/internal/transport/controlbuf.go:425
+#	0xa20157	google.golang.org/grpc/internal/transport.(*loopyWriter).run+0x77	/go/pkg/mod/google.golang.org/grpc@v1.75.0/internal/transport/controlbuf.go:590
+#	0xa2a011	google.golang.org/grpc/internal/transport.NewHTTP2Client.func6+0xd1	/go/pkg/mod/google.golang.org/grpc@v1.75.0/internal/transport/http2_client.go:469
+
+1 @ 0x4796ee 0x456e97 0xa4d42b 0x481321
+#	0xa4d42a	google.golang.org/grpc/internal/resolver/dns.(*dnsResolver).watcher+0x24a	/go/pkg/mod/google.golang.org/grpc@v1.75.0/internal/resolver/dns/dns_resolver.go:221
+
+1 @ 0x4796ee 0x456e97 0xb31a25 0x481321
+#	0xb31a24	service/pkg/background.(*Worker).runBackgroundTask+0x304	/app/pkg/background/worker.go:105
+
+1 @ 0x4796ee 0x456e97 0xb3a8b6 0xb3cfb1 0xb3fbc5 0xb3fba6 0xb3fd3a 0x481321
+#	0xb3a8b5	github.com/shirou/gopsutil/v3/internal/common.Sleep+0x75		/go/pkg/mod/github.com/shirou/gopsutil/v3@v3.24.5/internal/common/sleep.go:12
+#	0xb3cfb0	github.com/shirou/gopsutil/v3/cpu.PercentWithContext+0x70		/go/pkg/mod/github.com/shirou/gopsutil/v3@v3.24.5/cpu/cpu.go:163
+#	0xb3fbc4	github.com/shirou/gopsutil/v3/cpu.Percent+0x44				/go/pkg/mod/github.com/shirou/gopsutil/v3@v3.24.5/cpu/cpu.go:149
+#	0xb3fba5	service/internal/pkg/metrics.collectSystemMetrics+0x25			/app/internal/pkg/metrics/system.go:48
+#	0xb3fd39	service/internal/pkg/metrics.StartSystemMetricsCollector.func1+0x79	/app/internal/pkg/metrics/system.go:42
+
+1 @ 0x4796ee 0x456e97 0xb8cbdb 0xb8bf26 0x44468b 0x481321
+#	0xb8cbda	main.run+0xaba		/app/cmd/service/main.go:188
+#	0xb8bf25	main.main+0x285		/app/cmd/service/main.go:74
+#	0x44468a	runtime.main+0x28a	/usr/local/go/src/runtime/proc.go:283
+
+1 @ 0x4796ee 0x47ae19 0x47adf9 0x48ace5 0xa34bd6 0x481321
+#	0x47adf8	sync.runtime_notifyListWait+0x138						/usr/local/go/src/runtime/sema.go:597
+#	0x48ace4	sync.(*Cond).Wait+0x84								/usr/local/go/src/sync/cond.go:71
+#	0xa34bd5	google.golang.org/grpc/internal/transport.(*http2Client).keepalive+0x275	/go/pkg/mod/google.golang.org/grpc@v1.75.0/internal/transport/http2_client.go:1763
+
+1 @ 0x481321
+

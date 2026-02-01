@@ -1,0 +1,62 @@
+TEST_COMPOSE := docker-compose.test.yaml
+TEST_ENV := .env.test
+
+ifneq (,$(wildcard $(TEST_ENV)))
+    include $(TEST_ENV)
+    export $(shell sed 's/=.*//' $(TEST_ENV))
+endif
+
+# Пришось продублировать для ci
+TEST_DBSTRING := postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)?sslmode=$(POSTGRES_SSLMODE)
+MIGRATIONS := migrations
+COVER_DIR := coverage-integration
+COVERAGE_PKGS := \
+    ./internal/handlers/... \
+    ./internal/service/... \
+    ./internal/repository/... \
+    ./internal/gateway/... \
+    ./internal/entities/... \
+    ./internal/pkg/... \
+    ./pkg/...
+
+
+# Флаг для CI - не поднимает postgres
+CI ?= false
+
+.PHONY: test-integration test-integration-cover clean-test ci-test-integration ci-test-integration-cover ci-migrate-up
+
+# Условное поднятие postgres
+postgres-up:
+ifeq ($(CI),false)
+	@echo "Starting local postgres..."
+	@docker compose -f $(TEST_COMPOSE) --env-file $(TEST_ENV) up -d
+	@sleep 2
+else
+	@echo "CI mode: using GitHub Actions postgres"
+endif
+
+# Одна команда для миграций (локально и CI)
+migrate-up:
+	@echo "Running migrations..."
+	@go run github.com/pressly/goose/v3/cmd/goose -dir $(MIGRATIONS) postgres "$(TEST_DBSTRING)" up
+
+# Универсальные команды для локали и CI
+test-integration: postgres-up migrate-up
+	@go test -race ./... -tags=integration -p=1
+
+test-integration-cover: postgres-up migrate-up
+	@mkdir -p $(COVER_DIR)
+	@go test -race -coverpkg=$(COVERAGE_PKGS) ./... -tags=integration -p=1 -coverprofile=$(COVER_DIR)/coverage.out -covermode=atomic
+	@echo ""
+
+test-integration-cover-html: test-integration-cover
+	@go tool cover -html=$(COVER_DIR)/coverage.out -o $(COVER_DIR)/coverage.html
+
+test-integration-full:
+	@docker compose -f $(TEST_COMPOSE) --env-file $(TEST_ENV) down --remove-orphans
+	@$(MAKE) test-integration
+	@docker compose -f $(TEST_COMPOSE) --env-file $(TEST_ENV) stop
+
+clean-test:
+	@docker compose -f $(TEST_COMPOSE) --env-file $(TEST_ENV) down --remove-orphans
+	@rm -rf $(COVER_DIR)

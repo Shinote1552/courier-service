@@ -1,0 +1,6 @@
+package: dto
+generate:
+  models: true
+output: internal/generated/dto/dto.go
+
+

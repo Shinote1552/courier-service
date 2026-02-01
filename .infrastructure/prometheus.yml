@@ -1,0 +1,15 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: "traffic-generator"
+    static_configs:
+      - targets: ["traffic-generator:2112"]
+
+  - job_name: "service-courier"
+    static_configs:
+      - targets: ["service-courier:8080"]

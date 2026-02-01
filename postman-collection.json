@@ -1,0 +1,221 @@
+{
+	"info": {
+		"_postman_id": "4fa40e20-1272-4416-8ac7-0c2aff207e28",
+		"name": "Courier API - Minimal Test",
+		"description": "Basic test covering all API endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "45619923",
+		"_collection_link": "https://shamai-3185521.postman.co/workspace/shamai's-Workspace~5d458db7-982a-4a0b-8ebc-471c4f328c39/collection/45619923-4fa40e20-1272-4416-8ac7-0c2aff207e28?action=share&source=collection_link&creator=45619923"
+	},
+	"item": [
+		{
+			"name": "1. Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/ping",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"ping"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2. Create Courier",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Test Courier\",\n  \"phone\": \"+79991234567\",\n  \"status\": \"available\",\n  \"transport_type\": \"car\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/courier",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"courier"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3. Get All Couriers",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/couriers",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"couriers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4. Get Courier by ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/courier/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"courier",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "5. Update Courier",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"ID\": 1,\n  \"name\": \"Updated Courier\",\n  \"status\": \"available\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/courier",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"courier"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "6. Assign Delivery",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"order_ID\": \"test-assign-order-123\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/delivery/assign",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"delivery",
+						"assign"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "7. Unassign Delivery",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"order_ID\": \"test-assign-order-123\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/delivery/unassign",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"delivery",
+						"unassign"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "8. Error Case - Invalid Courier ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/courier/999",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"courier",
+						"999"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "9. Error Case - No Available Couriers",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"order_ID\": \"another-order\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/delivery/assign",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"delivery",
+						"assign"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080"
+		}
+	]
+}

@@ -1,0 +1,55 @@
+version: "2"
+
+run:
+  timeout: 3m
+  modules-download-mode: readonly
+
+linters:
+  enable:
+    - govet
+    - staticcheck
+    - errcheck
+    - unused
+    - gocritic
+    - gosec
+    - sqlclosecheck
+    - bodyclose
+    - contextcheck
+    - nilerr
+    - errname
+    - rowserrcheck
+    - wastedassign
+    - ineffassign
+  exclusions:
+    paths:
+      - "internal/app/wire.go"
+      - "internal/app/wire_gen.go"
+      - "internal/generated/"
+      - "_mocks_test\\.go$"
+      - "^migrations/"
+      - "^bin/"
+      - "^coverage"
+      - "^infrastructure/"
+      - "^pprof_data/"
+      - "pprof_data/"
+  settings:
+    gocritic:
+      enabled-tags:
+        - diagnostic
+        - style
+        - performance
+
+formatters:
+  enable:
+    - gofmt
+    - gci
+  settings:
+    gci:
+      sections:
+        - standard
+        - default
+        - prefix(github.com/Avito-courses)
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0

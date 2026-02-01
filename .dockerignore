@@ -1,0 +1,18 @@
+.env
+.env.local
+.env.*.local
+*.log
+.git
+.gitignore
+README.md
+.vscode
+.idea
+EOF
+
+# Pprof
+pprof_data/
+*.prof
+*.pb.gz
+*.png
+goroutines.txt
+cpu.png

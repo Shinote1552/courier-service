@@ -1,0 +1,269 @@
+openapi: 3.0.0
+info:
+  title: Courier API
+  version: 1.0.0
+
+paths:
+  /ping:
+    get:
+      operationId: ping_get
+      summary: Health check endpoint
+      description: Returns pong to verify service is running
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PingResponse"
+        "500":
+          description: Internal Server Error
+
+  /healthcheck:
+    head:
+      operationId: healthcheck_head
+      summary: Health check endpoint
+      description: Returns empty response with status code to verify service health
+      responses:
+        "204":
+          description: No Content - Service is healthy
+
+  /courier/{ID}:
+    get:
+      operationId: courier_get
+      summary: Get courier by ID
+      description: Returns a single courier by their ID
+      parameters:
+        - name: ID
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Courier found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Courier"
+        "400":
+          description: Bad Request - Invalid courier ID
+        "404":
+          description: Not Found - Courier not found
+        "500":
+          description: Internal Server Error
+
+  /couriers:
+    get:
+      operationId: couriers_get
+      summary: Get all couriers
+      description: Returns list of all couriers
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Courier"
+        "500":
+          description: Internal Server Error
+
+  /courier:
+    post:
+      operationId: courier_post
+      summary: Create new courier
+      description: Creates a new courier with the provided data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CourierCreate"
+      responses:
+        "201":
+          description: Courier created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CourierCreateResponse"
+        "400":
+          description: Bad Request - Validation error
+        "409":
+          description: Conflict - Courier with this phone already exists
+        "500":
+          description: Internal Server Error
+
+    put:
+      operationId: courier_put
+      summary: Update courier
+      description: Updates courier data. Only provided fields will be updated.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CourierUpdate"
+      responses:
+        "200":
+          description: Courier updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Courier"
+        "400":
+          description: Bad Request - Validation error
+        "404":
+          description: Not Found - Courier not found
+        "409":
+          description: Conflict - Phone number already exists
+        "500":
+          description: Internal Server Error
+
+  /delivery/assign:
+    post:
+      operationId: delivery_assign_post
+      summary: Assign a courier to order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeliveryAssignRequest"
+      responses:
+        "200":
+          description: The courier has been assigned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeliveryAssignResponse"
+        "400":
+          description: Bad Request - Validation error
+        "409":
+          description: No free couriers
+
+  /delivery/unassign:
+    post:
+      operationId: delivery_unassign_post
+      summary: Unassign a courier from the order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeliveryUnassignRequest"
+      responses:
+        "200":
+          description: The courier has been unassigned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeliveryUnassignResponse"
+        "400":
+          description: Bad Request - Validation error
+        "404":
+          description: Assignment not found between courier and delivery
+
+components:
+  schemas:
+    Courier:
+      type: object
+      required: [ID, name, phone, status, transport_type]
+      properties:
+        ID:
+          type: integer
+          format: int64
+        name:
+          type: string
+        phone:
+          type: string
+        status:
+          type: string
+        transport_type:
+          type: string
+
+    CourierCreate:
+      type: object
+      required: [name, phone, status, transport_type]
+      properties:
+        name:
+          type: string
+        phone:
+          type: string
+        status:
+          type: string
+        transport_type:
+          type: string
+
+    CourierCreateResponse:
+      type: object
+      required: [ID]
+      properties:
+        ID:
+          type: integer
+          format: int64
+
+    CourierUpdate:
+      type: object
+      required: [ID]
+      properties:
+        ID:
+          type: integer
+          format: int64
+        name:
+          type: string
+        phone:
+          type: string
+        status:
+          type: string
+        transport_type:
+          type: string
+
+    DeliveryAssignRequest:
+      type: object
+      required: [order_ID]
+      properties:
+        order_ID:
+          type: string
+
+    DeliveryAssignResponse:
+      type: object
+      required: [courier_ID, order_ID, transport_type, delivery_deadline]
+      properties:
+        courier_ID:
+          type: integer
+          format: int64
+        order_ID:
+          type: string
+        transport_type:
+          type: string
+        delivery_deadline:
+          type: string
+          format: date-time
+
+    DeliveryUnassignRequest:
+      type: object
+      required: [order_ID]
+      properties:
+        order_ID:
+          type: string
+
+    DeliveryUnassignResponse:
+      type: object
+      required: [courier_ID, status, order_ID]
+      properties:
+        order_ID:
+          type: string
+        status:
+          type: string
+        courier_ID:
+          type: integer
+          format: int64
+
+    PingResponse:
+      type: object
+      properties:
+        message:
+          type: string
